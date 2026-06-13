@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:linear-gradient(135deg,#eef2ff,#f8f9ff);color:var(--color-text-primary,#1a1a18);min-height:100vh}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+input,select,textarea{font-family:inherit;font-size:14px;padding:8px 12px;border:0.5px solid var(--color-border-secondary,rgba(0,0,0,0.3));border-radius:8px;background:var(--color-background-primary,#fff);color:var(--color-text-primary,#1a1a18);width:100%;outline:none;transition:border-color 0.15s}
+input:focus,select:focus,textarea:focus{border-color:#5347b4;box-shadow:0 0 0 2px rgba(83,74,183,0.15)}
+button{font-family:inherit;font-size:14px;padding:9px 18px;border-radius:8px;cursor:pointer;transition:all 0.15s;font-weight:500;border:none}
+.btn-primary{background:linear-gradient(135deg,#5347b4,#6c5ce7);color:#fff}
+.btn-primary:hover{background:#3c3489}
+.btn-secondary{background:transparent;border:0.5px solid var(--color-border-secondary,rgba(0,0,0,0.3));color:var(--color-text-primary,#1a1a18)}
+.btn-secondary:hover{background:var(--color-background-secondary,rgba(0,0,0,0.05))}
+.btn-danger{background:#a32d2d;color:#fff}
+.btn-danger:hover{background:#791f1f}
+.btn-sm{padding:6px 12px;font-size:12px}
+.card{background:#fff;border:none;border-radius:20px;padding:1.25rem;box-shadow:0 15px 40px rgba(0,0,0,.12)}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:500}
+.badge-success{background:#eaf3de;color:#27500a}
+.badge-warning{background:#faeeda;color:#633806}
+.badge-info{background:#e6f1fb;color:#0c447c}
+.badge-purple{background:#eeedfe;color:#3c3489}
+.badge-danger{background:#fcebeb;color:#791f1f}
+.metric-card{background:var(--color-background-secondary,rgba(0,0,0,0.04));border-radius:8px;padding:1rem}
+.metric-label{font-size:12px;color:var(--color-text-secondary,rgba(0,0,0,0.5));margin-bottom:4px}
+.metric-value{font-size:24px;font-weight:500;color:var(--color-text-primary,#1a1a18)}
+.form-label{font-size:13px;font-weight:500;color:var(--color-text-secondary,rgba(0,0,0,0.6));margin-bottom:5px;display:block}
+.form-group{margin-bottom:1rem}
+.error{font-size:12px;color:#a32d2d;margin-top:4px}
+.nav-tab{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;border:none;background:transparent;color:var(--color-text-secondary,rgba(0,0,0,0.5));transition:all 0.15s}
+.nav-tab.active{background:#eeedfe;color:#3c3489}
+.nav-tab:hover:not(.active){background:var(--color-background-secondary,rgba(0,0,0,0.04))}
+.table-row{display:grid;padding:10px 12px;border-bottom:0.5px solid var(--color-border-tertiary,rgba(0,0,0,0.1));font-size:13px;align-items:center}
+.table-row:hover{background:var(--color-background-secondary,rgba(0,0,0,0.02))}
+.table-header{font-size:11px;font-weight:500;color:var(--color-text-secondary,rgba(0,0,0,0.5));text-transform:uppercase;letter-spacing:0.05em;padding:8px 12px;background:var(--color-background-secondary,rgba(0,0,0,0.03));border-radius:8px 8px 0 0}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;cursor:pointer;font-size:14px;transition:all 0.15s;color:var(--color-text-primary,#1a1a18)}
+.sidebar-item:hover{background:rgba(255,255,255,0.15)}
+.sidebar-item.active{background:rgba(255,255,255,0.25);font-weight:500}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:1rem}
+.modal{background:var(--color-background-primary,#fff);border-radius:12px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal-header{padding:1.25rem;border-bottom:0.5px solid var(--color-border-tertiary,rgba(0,0,0,0.1));display:flex;justify-content:space-between;align-items:center}
+.modal-body{padding:1.25rem}
+.modal-footer{padding:1rem 1.25rem;border-top:0.5px solid var(--color-border-tertiary,rgba(0,0,0,0.1));display:flex;gap:8px;justify-content:flex-end}
+.progress-bar{height:6px;background:var(--color-background-secondary,rgba(0,0,0,0.08));border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:#5347b4;border-radius:3px;transition:width 0.3s}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#1a1a18;color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;z-index:2000;animation:slideUp 0.2s ease}
+@keyframes slideUp{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+.chart-bar{transition:height 0.5s ease}
+.divider{height:0.5px;background:var(--color-border-tertiary,rgba(0,0,0,0.1));margin:1rem 0}
+select option{background:var(--color-background-primary,#fff);color:var(--color-text-primary,#1a1a18)}
+</style>
+</head>
+<body>
+<h2 class="sr-only">Naye Pank Foundation — Volunteer Registration & Management System</h2>
+<div id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const DB = {
+  users: [
+    {id:'u1',name:'Admin User',email:'admin@nayepank.org',password:'admin123',role:'admin',createdAt:'2024-01-01'},
+    {id:'u2',name:'Priya Sharma',email:'priya@nayepank.org',password:'vol123',role:'volunteer',createdAt:'2024-01-15'}
+  ],
+  volunteers: [
+    {id:'v1',userId:'u2',name:'Priya Sharma',email:'priya@nayepank.org',phone:'9876543210',age:24,gender:'Female',city:'Patna',state:'Bihar',skills:['Teaching','Healthcare'],availability:'Weekends',motivation:'Want to give back to society',status:'approved',joinDate:'2024-01-15',hoursLogged:48,events:['e1','e2']},
+    {id:'v2',userId:null,name:'Rahul Kumar',email:'rahul.k@email.com',phone:'9123456780',age:28,gender:'Male',city:'Muzaffarpur',state:'Bihar',skills:['IT Support','Photography'],availability:'Evenings',motivation:'Passionate about education',status:'pending',joinDate:'2024-02-20',hoursLogged:0,events:[]},
+    {id:'v3',userId:null,name:'Anjali Singh',email:'anjali.s@email.com',phone:'9988776655',age:22,gender:'Female',city:'Gaya',state:'Bihar',skills:['Teaching','Arts & Crafts'],availability:'Full-time',motivation:'Empower rural children',status:'approved',joinDate:'2024-02-10',hoursLogged:72,events:['e1','e3']},
+    {id:'v4',userId:null,name:'Mohammed Ali',email:'m.ali@email.com',phone:'9001234567',age:31,gender:'Male',city:'Darbhanga',state:'Bihar',skills:['Healthcare','Social Work'],availability:'Weekends',motivation:'Healthcare access for all',status:'approved',joinDate:'2024-03-01',hoursLogged:36,events:['e2']},
+    {id:'v5',userId:null,name:'Sunita Devi',email:'sunita.d@email.com',phone:'9765432100',age:26,gender:'Female',city:'Bhagalpur',state:'Bihar',skills:['Teaching','NGO Management'],availability:'Full-time',motivation:'Women empowerment',status:'rejected',joinDate:'2024-03-15',hoursLogged:0,events:[]},
+    {id:'v6',userId:null,name:'Vikram Yadav',email:'vikram.y@email.com',phone:'9654321007',age:35,gender:'Male',city:'Patna',state:'Bihar',skills:['Fundraising','Event Management'],availability:'Weekends',motivation:'Community development',status:'pending',joinDate:'2024-04-01',hoursLogged:0,events:[]}
+  ],
+  events: [
+    {id:'e1',name:'Back to School Drive',date:'2024-03-15',location:'Patna',volunteers:['v1','v3'],hoursPerVolunteer:8,type:'Education'},
+    {id:'e2',name:'Free Health Camp',date:'2024-04-10',location:'Muzaffarpur',volunteers:['v1','v4'],hoursPerVolunteer:10,type:'Healthcare'},
+    {id:'e3',name:'Women Empowerment Workshop',date:'2024-05-05',location:'Gaya',volunteers:['v3'],hoursPerVolunteer:6,type:'Empowerment'}
+  ]
+};
+
+let currentUser = null;
+let currentPage = 'login';
+let adminPage = 'dashboard';
+let toastTimer = null;
+let editingVolunteer = null;
+let showModal = false;
+let filterStatus = 'all';
+let filterSkill = 'all';
+let searchQuery = '';
+
+function saveDB(){localStorage.setItem('nayepank_db', JSON.stringify(DB));}
+function loadDB(){const d=localStorage.getItem('nayepank_db');if(d){const p=JSON.parse(d);Object.assign(DB,p);}}
+try{loadDB();}catch(e){}
+
+function showToast(msg){
+  const t=document.getElementById('toast-el');
+  if(t)t.remove();
+  if(toastTimer)clearTimeout(toastTimer);
+  const el=document.createElement('div');
+  el.id='toast-el';el.className='toast';el.textContent=msg;
+  document.body.appendChild(el);
+  toastTimer=setTimeout(()=>{const t=document.getElementById('toast-el');if(t)t.remove();},3000);
+}
+
+function navigate(page,sub){
+  currentPage=page;
+  if(sub)adminPage=sub;
+  render();
+}
+
+function login(email,pwd){
+  const u=DB.users.find(x=>x.email===email&&x.password===pwd);
+  if(!u){showToast('Invalid email or password');return;}
+  currentUser=u;
+  currentPage=u.role==='admin'?'admin':'volunteer-portal';
+  render();
+}
+
+function logout(){currentUser=null;currentPage='login';render();}
+
+function registerVolunteer(data){
+  const existing=DB.users.find(u=>u.email===data.email);
+  if(existing){showToast('Email already registered');return false;}
+
+  const userId='u'+Date.now();
+
+  DB.users.push({
+    id:userId,
+    name:data.name,
+    email:data.email,
+    password:data.password,
+    role:'volunteer',
+    createdAt:new Date().toISOString().split('T')[0]
+  });
+
+  DB.volunteers.push({
+    ...data,
+    id:'v'+Date.now(),
+    userId:userId,
+    status:'pending',
+    joinDate:new Date().toISOString().split('T')[0],
+    hoursLogged:0,
+    events:[]
+  });
+
+  saveDB();
+  showToast('Registration successful! You can now login.');
+  navigate('login');
+  return true;
+}
+
+function updateVolunteerStatus(id,status){
+  const v=DB.volunteers.find(x=>x.id===id);
+  if(v){v.status=status;saveDB();render();showToast(`Volunteer ${status}`);}
+}
+
+function deleteVolunteer(id){
+  const idx=DB.volunteers.findIndex(x=>x.id===id);
+  if(idx>-1){DB.volunteers.splice(idx,1);saveDB();render();showToast('Volunteer removed');}
+}
+
+function getStats(){
+  const vols=DB.volunteers;
+  return {
+    total:vols.length,
+    approved:vols.filter(v=>v.status==='approved').length,
+    pending:vols.filter(v=>v.status==='pending').length,
+    rejected:vols.filter(v=>v.status==='rejected').length,
+    totalHours:vols.reduce((s,v)=>s+v.hoursLogged,0),
+    events:DB.events.length,
+    cities:[...new Set(vols.map(v=>v.city))].length
+  };
+}
+
+function filteredVolunteers(){
+  return DB.volunteers.filter(v=>{
+    const matchStatus=filterStatus==='all'||v.status===filterStatus;
+    const matchSkill=filterSkill==='all'||v.skills.includes(filterSkill);
+    const matchSearch=!searchQuery||v.name.toLowerCase().includes(searchQuery.toLowerCase())||v.email.toLowerCase().includes(searchQuery.toLowerCase())||v.city.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchStatus&&matchSkill&&matchSearch;
+  });
+}
+
+function allSkills(){
+  const s=new Set();DB.volunteers.forEach(v=>v.skills.forEach(sk=>s.add(sk)));
+  return [...s].sort();
+}
+
+// RENDER ENGINE
+function render(){
+  const app=document.getElementById('app');
+  if(currentPage==='login')app.innerHTML=renderLogin();
+  else if(currentPage==='register')app.innerHTML=renderRegister();
+  else if(currentPage==='admin')app.innerHTML=renderAdmin();
+  else if(currentPage==='volunteer-portal')app.innerHTML=renderVolunteerPortal();
+  attachEvents();
+  if(currentPage==='admin'&&adminPage==='reports')setTimeout(renderCharts,100);
+}
+
+function renderLogin(){return`
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem">
+  <div style="width:100%;max-width:420px">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="width:64px;height:64px;background:#5347b4;border-radius:16px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      </div>
+      <h1 style="font-size:22px;font-weight:500;margin-bottom:4px">Naye Pank Foundation</h1>
+      <p style="font-size:14px;color:var(--color-text-secondary,rgba(0,0,0,0.5))">Volunteer Management Portal</p>
+    </div>
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">Email address</label>
+        <input type="email" id="login-email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="login-pwd" placeholder="Enter password">
+        <div id="login-error" class="error" style="display:none"></div>
+      </div>
+      <button class="btn-primary" style="width:100%;padding:10px" onclick="handleLogin()">Sign in</button>
+      <div style="text-align:center;margin-top:1rem;font-size:13px;color:var(--color-text-secondary,rgba(0,0,0,0.5))">
+        New volunteer? <a href="#" onclick="navigate('register')" style="color:#5347b4;text-decoration:none;font-weight:500">Apply to join</a>
+      </div>
+    </div>
+    <div style="margin-top:20px;background:linear-gradient(135deg,#5347b4,#7c6cf0);color:white;padding:18px;border-radius:14px;text-align:center;box-shadow:0 8px 20px rgba(83,71,180,.25);">
+<h3 style="margin-bottom:10px">🔐 Admin Access</h3>
+<div style="font-size:14px;line-height:1.8">
+<strong>Email:</strong> admin@nayepank.org<br>
+<strong>Password:</strong> admin123
+</div>
+<div style="margin-top:10px;font-size:12px;opacity:.9;">
+Login as Admin to manage volunteers, events and reports.
+</div>
+</div>
+  </div>
+</div>
+`;}
+
+function renderRegister(){return`
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem">
+  <div style="width:100%;max-width:540px">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <h1 style="font-size:22px;font-weight:500">Volunteer Application</h1>
+      <p style="font-size:14px;color:var(--color-text-secondary,rgba(0,0,0,0.5))">Join us in building a better Bihar</p>
+    </div>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Full name *</label>
+          <input type="text" id="reg-name" placeholder="Your full name">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Age *</label>
+          <input type="number" id="reg-age" placeholder="18+" min="18" max="80">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Email *</label>
+          <input type="email" id="reg-email" placeholder="email@example.com">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Password *</label>
+          <input type="password" id="reg-password" placeholder="Create password">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Confirm Password *</label>
+          <input type="password" id="reg-confirm-password" placeholder="Confirm password">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Phone *</label>
+          <input type="tel" id="reg-phone" placeholder="10-digit number">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Gender *</label>
+          <select id="reg-gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option></select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">City *</label>
+          <input type="text" id="reg-city" placeholder="Your city">
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <label class="form-label">State</label>
+        <select id="reg-state"><option value="Bihar">Bihar</option><option value="Jharkhand">Jharkhand</option><option value="UP">Uttar Pradesh</option><option value="Other">Other</option></select>
+      </div>
+      <div style="margin-top:12px">
+        <label class="form-label">Skills (select all that apply) *</label>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px">
+          ${['Teaching','Healthcare','IT Support','Social Work','Arts & Crafts','Photography','Fundraising','NGO Management','Event Management'].map(s=>`
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:6px 8px;border:0.5px solid var(--color-border-tertiary,rgba(0,0,0,0.15));border-radius:6px">
+            <input type="checkbox" class="skill-cb" value="${s}" style="width:auto"> ${s}
+          </label>`).join('')}
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <label class="form-label">Availability *</label>
+        <select id="reg-avail"><option value="">Select</option><option>Weekdays</option><option>Weekends</option><option>Evenings</option><option>Full-time</option></select>
+      </div>
+      <div style="margin-top:12px">
+        <label class="form-label">Why do you want to volunteer? *</label>
+        <textarea id="reg-motivation" rows="3" placeholder="Tell us about your motivation..."></textarea>
+      </div>
+      <div id="reg-error" class="error" style="display:none;margin-top:8px"></div>
+      <div style="display:flex;gap:10px;margin-top:1.25rem">
+        <button class="btn-secondary" onclick="navigate('login')">Back to login</button>
+        <button class="btn-primary" style="flex:1" onclick="handleRegister()">Submit application</button>
+      </div>
+    </div>
+  </div>
+</div>
+`;}
+
+function renderAdmin(){
+  const stats=getStats();
+  const pages={dashboard:renderDashboard,volunteers:renderVolunteers,events:renderEvents,reports:renderReports};
+  return`
+<div style="display:flex;min-height:100vh">
+  <div style="width:220px;background:#2c2c2a;padding:1rem;flex-shrink:0;display:flex;flex-direction:column">
+    <div style="padding:12px;margin-bottom:1rem">
+      <div style="font-weight:500;color:#fff;font-size:15px">Naye Pank</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">Admin Panel</div>
+    </div>
+    ${[['dashboard','Dashboard','ti-layout-dashboard'],['volunteers','Volunteers','ti-users'],['events','Events','ti-calendar-event'],['reports','Reports','ti-chart-bar']].map(([p,l,i])=>`
+    <div class="sidebar-item ${adminPage===p?'active':''}" style="color:${adminPage===p?'#fff':'rgba(255,255,255,0.7)'}" onclick="navigate('admin','${p}')">
+      <i class="${i} ti" style="font-size:18px" aria-hidden="true"></i>${l}
+    </div>`).join('')}
+    <div style="flex:1"></div>
+    <div style="padding:12px;border-top:0.5px solid rgba(255,255,255,0.1);margin-top:1rem">
+      <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:2px">${currentUser.name}</div>
+      <button onclick="logout()" style="font-size:12px;color:rgba(255,255,255,0.4);background:none;border:none;cursor:pointer;padding:0">Sign out</button>
+    </div>
+  </div>
+  <div style="flex:1;overflow:auto;padding:1.5rem">
+    ${(pages[adminPage]||renderDashboard)()}
+  </div>
+</div>
+${showModal?renderVolunteerModal():''}
+`;}
+
+function renderDashboard(){
+  const s=getStats();
+  const approved=DB.volunteers.filter(v=>v.status==='approved');
+  const recent=DB.volunteers.slice().sort((a,b)=>new Date(b.joinDate)-new Date(a.joinDate)).slice(0,4);
+  return`
+<div>
+  <h2 style="font-size:20px;font-weight:500;margin-bottom:1.5rem">Dashboard overview</h2>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem">
+    <div class="metric-card"><div class="metric-label">Total volunteers</div><div class="metric-value">${s.total}</div></div>
+    <div class="metric-card"><div class="metric-label">Active (approved)</div><div class="metric-value" style="color:#27500a">${s.approved}</div></div>
+    <div class="metric-card"><div class="metric-label">Pending review</div><div class="metric-value" style="color:#633806">${s.pending}</div></div>
+    <div class="metric-card"><div class="metric-label">Total hours logged</div><div class="metric-value" style="color:#3c3489">${s.totalHours}</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <h3 style="font-size:15px;font-weight:500">Volunteer status</h3>
+      </div>
+      ${[['Approved',s.approved,s.total,'#5347b4'],['Pending',s.pending,s.total,'#ba7517'],['Rejected',s.rejected,s.total,'#a32d2d']].map(([l,v,t,c])=>`
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+          <span>${l}</span><span style="font-weight:500">${v}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${t?Math.round(v/t*100):0}%;background:${c}"></div></div>
+      </div>`).join('')}
+    </div>
+    <div class="card">
+      <h3 style="font-size:15px;font-weight:500;margin-bottom:1rem">Top contributors</h3>
+      ${approved.sort((a,b)=>b.hoursLogged-a.hoursLogged).slice(0,4).map(v=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;background:#eeedfe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#3c3489">${v.name.split(' ').map(n=>n[0]).join('')}</div>
+          <div><div style="font-size:13px;font-weight:500">${v.name}</div><div style="font-size:11px;color:var(--color-text-secondary,rgba(0,0,0,0.5))">${v.city}</div></div>
+        </div>
+        <span class="badge badge-purple">${v.hoursLogged}h</span>
+      </div>`).join('')}
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h3 style="font-size:15px;font-weight:500">Recent applications</h3>
+      <button class="btn-secondary btn-sm" onclick="navigate('admin','volunteers')">View all</button>
+    </div>
+    <div style="border:0.5px solid var(--color-border-tertiary,rgba(0,0,0,0.1));border-radius:8px;overflow:hidden">
+      <div class="table-header table-row" style="grid-template-columns:2fr 1.5fr 1fr 1fr 1fr">
+        <span>Name</span><span>Email</span><span>City</span><span>Applied</span><span>Status</span>
+      </div>
+      ${recent.map(v=>`
+      <div class="table-row" style="grid-template-columns:2fr 1.5fr 1fr 1fr 1fr">
+        <span style="font-weight:500">${v.name}</span>
+        <span style="color:var(--color-text-secondary,rgba(0,0,0,0.6));font-size:12px">${v.email}</span>
+        <span>${v.city}</span>
+        <span style="font-size:12px;color:var(--color-text-secondary,rgba(0,0,0,0.5))">${v.joinDate}</span>
+        <span><span class="badge badge-${v.status==='approved'?'success':v.status==='pending'?'warning':'danger'}">${v.status}</span></span>
+      </div>`).join('')}
+    </div>
+  </div>
+</div>
+`;}
+
+function renderVolunteers(){
+  const vols=filteredVolunteers();
+  return`
+<div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <h2 style="font-size:20px;font-weight:500">Volunteers</h2>
+    <div style="display:flex;gap:8px">
+      <input type="text" placeholder="Search name, email, city..." value="${searchQuery}" oninput="searchQuery=this.value;render()" style="width:220px">
+      <select onchange="filterStatus=this.value;render()" style="width:130px">
+        <option value="all" ${filterStatus==='all'?'selected':''}>All status</option>
+        <option value="approved" ${filterStatus==='approved'?'selected':''}>Approved</option>
+        <option value="pending" ${filterStatus==='pending'?'selected':''}>Pending</option>
+        <option value="rejected" ${filterStatus==='rejected'?'selected':''}>Rejected</option>
+      </select>
+      <select onchange="filterSkill=this.value;render()" style="width:150px">
+        <option value="all" ${filterSkill==='all'?'selected':''}>All skills</option>
+        ${allSkills().map(s=>`<option value="${s}" ${filterSkill===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="table-header table-row" style="grid-template-columns:2fr 1.5fr 1fr 1.5fr 1fr 1.5fr">
+      <span>Volunteer</span><span>Contact</span><span>City</span><span>Skills</span><span>Status</span><span>Actions</span>
+    </div>
+    ${vols.length===0?`<div style="padding:2rem;text-align:center;color:var(--color-text-secondary,rgba(0,0,0,0.5));font-size:14px">No volunteers match the current filters.</div>`:''}
+    ${vols.map(v=>`
+    <div class="table-row" style="grid-template-columns:2fr 1.5fr 1fr 1.5fr 1fr 1.5fr">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;background:#eeedfe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#3c3489;flex-shrink:0">${v.name.split(' ').map(n=>n[0]).join('')}</div>
+        <div><div style="font-weight:500;font-size:13px">${v.name}</div><div style="font-size:11px;color:var(--color-text-secondary,rgba(0,0,0,0.5))">${v.hoursLogged}h logged</div></div>
+      </div>
+      <div><div style="font-size:12px">${v.email}</div><div style="font-size:11px;color:var(--color-text-secondary,rgba(0,0,0,0.5))">${v.phone}</div></div>
+      <span style="font-size:13px">${v.city}</span>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">${v.skills.slice(0,2).map(s=>`<span class="badge badge-info" style="font-size:10px">${s}</span>`).join('')}${v.skills.length>2?`<span style="font-size:10px;color:var(--color-text-secondary,rgba(0,0,0,0.5))">+${v.skills.length-2}</span>`:''}</div>
+      <span><span class="badge badge-${v.status==='approved'?'success':v.status==='pending'?'warning':'danger'}">${v.status}</span></span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn-secondary btn-sm" onclick="openVolunteerModal('${v.id}')">View</button>
+        ${v.status==='pending'?`<button class="btn-primary btn-sm" onclick="updateVolunteerStatus('${v.id}','approved')">Approve</button>
+        <button class="btn-danger btn-sm" onclick="updateVolunteerStatus('${v.id}','rejected')">Reject</button>`:''}
+        ${v.status==='approved'?`<button class="btn-secondary btn-sm" style="color:#a32d2d" onclick="if(confirm('Remove this volunteer?'))deleteVolunteer('${v.id}')">Remove</button>`:''}
+      </div>
+    </div>`).join('')}
+  </div>
+</div>
+`;}
+
+function renderEvents(){return`
+<div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <h2 style="font-size:20px;font-weight:500">Events</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+    ${DB.events.map(e=>{
+      const vols=DB.volunteers.filter(v=>v.events.includes(e.id));
+      const colors={Education:'badge-info',Healthcare:'badge-success',Empowerment:'badge-purple'};
+      return`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <h3 style="font-size:14px;font-weight:500">${e.name}</h3>
+        <span class="badge ${colors[e.type]||'badge-info'}">${e.type}</span>
+      </div>
+      <div style="font-size:12px;color:var(--color-text-secondary,rgba(0,0,0,0.5));margin-bottom:8px">
+        <div style="margin-bottom:3px">📅 ${e.date}</div>
+        <div style="margin-bottom:3px">📍 ${e.location}</div>
+        <div>⏱ ${e.hoursPerVolunteer}h per volunteer</div>
+      </div>
+      <div class="divider"></div>
+      <div style="font-size:12px;font-weight:500;margin-bottom:6px;color:var(--color-text-secondary,rgba(0,0,0,0.6))">Participants (${vols.length})</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${vols.map(v=>`<span style="font-size:11px;background:#eeedfe;color:#3c3489;padding:3px 8px;border-radius:6px">${v.name.split(' ')[0]}</span>`).join('')}
+        ${vols.length===0?`<span style="font-size:12px;color:var(--color-text-secondary,rgba(0,0,0,0.4))">No volunteers yet</span>`:''}
+      </div>
+    </div>`;}).join('')}
+  </div>
+</div>
+`;}
+
+function renderReports(){
+  const vols=DB.volunteers;
+  const cityMap={};vols.forEach(v=>{cityMap[v.city]=(cityMap[v.city]||0)+1;});
+  const skillMap={};vols.forEach(v=>v.skills.forEach(s=>{skillMap[s]=(skillMap[s]||0)+1;}));
+  const monthMap={};vols.forEach(v=>{const m=v.joinDate.slice(0,7);monthMap[m]=(monthMap[m]||0)+1;});
+  const months=Object.keys(monthMap).sort();
+  return`
+<div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <h2 style="font-size:20px;font-weight:500">Reports & analytics</h2>
+    <button class="btn-primary" onclick="exportCSV()">Export CSV</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem">
+    ${[['Total volunteers',DB.volunteers.length,'#5347b4'],['Approved rate',Math.round(DB.volunteers.filter(v=>v.status==='approved').length/DB.volunteers.length*100)+'%','#27500a'],['Avg hours/volunteer',Math.round(DB.volunteers.reduce((s,v)=>s+v.hoursLogged,0)/Math.max(DB.volunteers.filter(v=>v.hoursLogged>0).length,1)),'#0c447c']].map(([l,v,c])=>`
+    <div class="metric-card"><div class="metric-label">${l}</div><div class="metric-value" style="color:${c}">${v}</div></div>`).join('')}
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+    <div class="card">
+      <h3 style="font-size:14px;font-weight:500;margin-bottom:1rem">Volunteer growth by month</h3>
+      <div style="position:relative;height:200px"><canvas id="chart-growth" role="img" aria-label="Monthly volunteer registrations">Monthly volunteer data.</canvas></div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:14px;font-weight:500;margin-bottom:1rem">Volunteers by city</h3>
+      <div style="position:relative;height:200px"><canvas id="chart-city" role="img" aria-label="Volunteers per city">City distribution.</canvas></div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+    <div class="card">
+      <h3 style="font-size:14px;font-weight:500;margin-bottom:1rem">Skills distribution</h3>
+      <div style="position:relative;height:220px"><canvas id="chart-skills" role="img" aria-label="Volunteer skills">Skills data.</canvas></div>
+    </div>
+    <div class="card">
+      <h3 style="font-size:14px;font-weight:500;margin-bottom:1rem">Application status breakdown</h3>
+      <div style="position:relative;height:200px;display:flex;align-items:center;justify-content:center"><canvas id="chart-status" role="img" aria-label="Application status pie chart">Status breakdown.</canvas></div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:10px;font-size:12px">
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#5347b4;display:inline-block"></span>Approved</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#ba7517;display:inline-block"></span>Pending</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#a32d2d;display:inline-block"></span>Rejected</span>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:1rem" class="card">
+    <h3 style="font-size:14px;font-weight:500;margin-bottom:1rem">Volunteer details export preview</h3>
+    <div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="background:var(--color-background-secondary,rgba(0,0,0,0.04))">
+        ${['Name','Email','City','Skills','Status','Joined','Hours'].map(h=>`<th style="padding:8px 10px;text-align:left;font-weight:500;color:var(--color-text-secondary,rgba(0,0,0,0.6));border-bottom:0.5px solid var(--color-border-tertiary,rgba(0,0,0,0.1))">${h}</th>`).join('')}
+      </tr></thead>
+      <tbody>
+        ${DB.volunteers.map(v=>`<tr style="border-bottom:0.5px solid var(--color-border-tertiary,rgba(0,0,0,0.06))">
+          <td style="padding:7px 10px;font-weight:500">${v.name}</td>
+          <td style="padding:7px 10px;color:var(--color-text-secondary,rgba(0,0,0,0.6))">${v.email}</td>
+          <td style="padding:7px 10px">${v.city}</td>
+          <td style="padding:7px 10px">${v.skills.join(', ')}</td>
+          <td style="padding:7px 10px"><span class="badge badge-${v.status==='approved'?'success':v.status==='pending'?'warning':'danger'}" style="font-size:10px">${v.status}</span></td>
+          <td style="padding:7px 10px">${v.joinDate}</td>
+          <td style="padding:7px 10px;font-weight:500">${v.hoursLogged}h</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+`;}
+
+function renderCharts(){
+  if(typeof Chart==='undefined')return;
+  const vols=DB.volunteers;
+  const monthMap={};
+  vols.forEach(v=>{const m=v.joinDate.slice(0,7);monthMap[m]=(monthMap[m]||0)+1;});
+  const months=Object.keys(monthMap).sort();
+  const cityMap={};vols.forEach(v=>{cityMap[v.city]=(cityMap[v.city]||0)+1;});
+  const skillMap={};vols.forEach(v=>v.skills.forEach(s=>{skillMap[s]=(skillMap[s]||0)+1;}));
+  const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}};
+
+  const gc=document.getElementById('chart-growth');
+  if(gc)new Chart(gc,{type:'bar',data:{labels:months.map(m=>{const[y,mo]=m.split('-');return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(mo)-1]+' '+y.slice(2);}),datasets:[{label:'New volunteers',data:months.map(m=>monthMap[m]),backgroundColor:'#7f77dd',borderRadius:4}]},options:{...opts,scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+
+  const cc=document.getElementById('chart-city');
+  const cities=Object.keys(cityMap);
+  if(cc)new Chart(cc,{type:'bar',data:{labels:cities,datasets:[{label:'Volunteers',data:cities.map(c=>cityMap[c]),backgroundColor:'#1d9e75',borderRadius:4}]},options:{...opts,scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+
+  const sc=document.getElementById('chart-skills');
+  const skills=Object.keys(skillMap).sort((a,b)=>skillMap[b]-skillMap[a]);
+  if(sc)new Chart(sc,{type:'bar',data:{labels:skills,datasets:[{label:'Count',data:skills.map(s=>skillMap[s]),backgroundColor:'#5347b4',borderRadius:4}]},options:{...opts,indexAxis:'y',scales:{x:{beginAtZero:true,ticks:{stepSize:1}}}}});
+
+  const stc=document.getElementById('chart-status');
+  const s=DB.volunteers.reduce((a,v)=>{a[v.status]=(a[v.status]||0)+1;return a;},{});
+  if(stc)new Chart(stc,{type:'doughnut',data:{labels:['Approved','Pending','Rejected'],datasets:[{data:[s.approved||0,s.pending||0,s.rejected||0],backgroundColor:['#5347b4','#ba7517','#a32d2d'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+}
+
+function renderVolunteerModal(){
+  const v=DB.volunteers.find(x=>x.id===editingVolunteer);
+  if(!v)return'';
+  return`
+<div class="modal-overlay" onclick="if(event.target.className==='modal-overlay'){showModal=false;render();}">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;background:#eeedfe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#3c3489">${v.name.split(' ').map(n=>n[0]).join('')}</div>
+        <div><div style="font-size:16px;font-weight:500">${v.name}</div><div style="font-size:12px;color:var(--color-text-secondary,rgba(0,0,0,0.5))">${v.email}</div></div>
+      </div>
+      <button onclick="showModal=false;render()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--color-text-secondary,rgba(0,0,0,0.5))">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+        ${[['Phone',v.phone],['Age',v.age],['Gender',v.gender],['City',v.city],['State',v.state],['Availability',v.availability],['Joined',v.joinDate],['Hours logged',v.hoursLogged+'h']].map(([k,val])=>`
+        <div><div style="color:var(--color-text-secondary,rgba(0,0,0,0.5));font-size:11px;margin-bottom:2px">${k}</div><div style="font-weight:500">${val}</div></div>`).join('')}
+      </div>
+      <div class="divider"></div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;color:var(--color-text-secondary,rgba(0,0,0,0.5));margin-bottom:6px">SKILLS</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${v.skills.map(s=>`<span class="badge badge-info">${s}</span>`).join('')}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--color-text-secondary,rgba(0,0,0,0.5));margin-bottom:6px">MOTIVATION</div>
+        <p style="font-size:13px;line-height:1.5;color:var(--color-text-primary,#1a1a18)">${v.motivation}</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <span class="badge badge-${v.status==='approved'?'success':v.status==='pending'?'warning':'danger'}" style="margin-right:auto;font-size:12px">${v.status}</span>
+      ${v.status==='pending'?`<button class="btn-danger" onclick="updateVolunteerStatus('${v.id}','rejected');showModal=false">Reject</button><button class="btn-primary" onclick="updateVolunteerStatus('${v.id}','approved');showModal=false">Approve</button>`:''}
+      <button class="btn-secondary" onclick="showModal=false;render()">Close</button>
+    </div>
+  </div>
+</div>
+`;}
+
+function renderVolunteerPortal(){
+  const v=DB.volunteers.find(x=>x.userId===currentUser.id);
+  return`
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem">
+  <div style="width:100%;max-width:560px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+      <div>
+        <h1 style="font-size:20px;font-weight:500">Welcome, ${currentUser.name}</h1>
+        <p style="font-size:13px;color:var(--color-text-secondary,rgba(0,0,0,0.5))">Naye Pank Foundation</p>
+      </div>
+      <button class="btn-secondary btn-sm" onclick="logout()">Sign out</button>
+    </div>
+    ${v?`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+        <h2 style="font-size:16px;font-weight:500">Your profile</h2>
+        <span class="badge badge-${v.status==='approved'?'success':v.status==='pending'?'warning':'danger'}">${v.status}</span>
+      </div>
+      ${v.status==='pending'?`<div style="background:#faeeda;color:#633806;padding:12px;border-radius:8px;font-size:13px;margin-bottom:1rem">Your application is under review. You'll be notified once it's processed.</div>`:''}
+      ${v.status==='approved'?`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem">
+        <div class="metric-card"><div class="metric-label">Hours logged</div><div class="metric-value" style="color:#3c3489">${v.hoursLogged}</div></div>
+        <div class="metric-card"><div class="metric-label">Events joined</div><div class="metric-value">${v.events.length}</div></div>
+      </div>`:''}
+      <div style="font-size:13px">
+        ${[['Phone',v.phone],['City',v.city],['Skills',v.skills.join(', ')],['Availability',v.availability]].map(([k,val])=>`
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary,rgba(0,0,0,0.08))">
+          <span style="color:var(--color-text-secondary,rgba(0,0,0,0.5))">${k}</span>
+          <span style="font-weight:500">${val}</span>
+        </div>`).join('')}
+      </div>
+      ${v.status==='approved'?`
+      <div style="margin-top:1.25rem">
+        <h3 style="font-size:14px;font-weight:500;margin-bottom:10px">Upcoming events</h3>
+        ${DB.events.map(e=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--color-background-secondary,rgba(0,0,0,0.03));border-radius:8px;margin-bottom:8px;font-size:13px">
+          <div><div style="font-weight:500">${e.name}</div><div style="font-size:11px;color:var(--color-text-secondary,rgba(0,0,0,0.5))">${e.date} · ${e.location}</div></div>
+          <span class="badge badge-info">${e.type}</span>
+        </div>`).join('')}
+      </div>`:''}
+    </div>`:`
+    <div class="card" style="text-align:center;padding:2rem">
+      <div style="font-size:40px;margin-bottom:1rem">🌱</div>
+      <h2 style="font-size:16px;font-weight:500;margin-bottom:8px">Complete your application</h2>
+      <p style="font-size:13px;color:var(--color-text-secondary,rgba(0,0,0,0.5));margin-bottom:1.25rem">You haven't submitted a volunteer application yet.</p>
+      <button class="btn-primary" onclick="navigate('register')">Apply now</button>
+    </div>`}
+  </div>
+</div>
+`;}
+
+function openVolunteerModal(id){editingVolunteer=id;showModal=true;render();}
+
+function exportCSV(){
+  const rows=[['Name','Email','Phone','Age','Gender','City','State','Skills','Availability','Status','Joined','Hours'],...DB.volunteers.map(v=>[v.name,v.email,v.phone,v.age,v.gender,v.city,v.state,v.skills.join(';'),v.availability,v.status,v.joinDate,v.hoursLogged])];
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nayepank_volunteers.csv';a.click();
+  showToast('CSV exported successfully');
+}
+
+function attachEvents(){
+  const le=document.getElementById('login-email');
+  if(le)le.addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
+  const lp=document.getElementById('login-pwd');
+  if(lp)lp.addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();});
+}
+
+function handleLogin(){
+  const email=document.getElementById('login-email')?.value;
+  const pwd=document.getElementById('login-pwd')?.value;
+  if(!email||!pwd){showToast('Please enter email and password');return;}
+  login(email,pwd);
+}
+
+function handleRegister(){
+  const get=id=>document.getElementById(id)?.value;
+  const skills=[...document.querySelectorAll('.skill-cb:checked')].map(c=>c.value);
+  const password=get('reg-password'),confirmPassword=get('reg-confirm-password');
+  const name=get('reg-name'),age=parseInt(get('reg-age')),email=get('reg-email'),phone=get('reg-phone'),gender=get('reg-gender'),city=get('reg-city'),state=get('reg-state'),avail=get('reg-avail'),motivation=get('reg-motivation');
+  const err=document.getElementById('reg-error');
+  if(password!==confirmPassword){err.style.display='block';err.textContent='Passwords do not match';return;}
+  if(!name||!age||!email||!phone||!gender||!city||!avail||!motivation||skills.length===0){
+    err.style.display='block';err.textContent='Please fill in all required fields and select at least one skill.';return;
+  }
+  if(age<18){err.style.display='block';err.textContent='You must be at least 18 years old.';return;}
+  if(!/\S+@\S+\.\S+/.test(email)){err.style.display='block';err.textContent='Please enter a valid email.';return;}
+  err.style.display='none';
+  registerVolunteer({name,age,email,password,phone,gender,city,state,skills,availability:avail,motivation});
+}
+
+window.navigate=navigate;window.login=login;window.logout=logout;
+window.handleLogin=handleLogin;window.handleRegister=handleRegister;
+window.updateVolunteerStatus=updateVolunteerStatus;window.deleteVolunteer=deleteVolunteer;
+window.openVolunteerModal=openVolunteerModal;window.exportCSV=exportCSV;
+window.filterStatus='all';window.filterSkill='all';window.searchQuery='';
+
+render();
+</script>
+</body>
+</html>
